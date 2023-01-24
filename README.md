@@ -1,3 +1,8 @@
+
+
+
+### Note: I write this project to improve my skills with Typescript. You can use without any permission. Happy coding :)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
