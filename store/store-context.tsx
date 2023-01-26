@@ -1,22 +1,26 @@
 import React, { createContext, useReducer } from "react";
 
-export type coffeeStore = {
+export type CoffeeStoreType = {
   id: string;
   name: string;
   imgUrl: string;
-  voting: string;
+  voting: number;
   address: string;
   neighborhood: string;
 };
 
 type StateType = {
   latLong: string;
-  coffeeStores: coffeeStore[];
+  coffeeStores: CoffeeStoreType[];
+  setCoffeeStores: (coffeeStores: CoffeeStoreType[]) => void;
+  setLatLong: (latLong: string) => void;
 };
 
 const INITIAL_STATE = {
   latLong: "",
   coffeeStores: [],
+  setCoffeeStores: () => {},
+  setLatLong: () => {},
 } as StateType;
 
 export const ACTION_TYPES = {
@@ -26,12 +30,12 @@ export const ACTION_TYPES = {
 
 type ActionType =
   | { type: "SET_LAT_LONG"; payload: string }
-  | { type: "SET_COFFEE_STORES"; payload: coffeeStore[] };
+  | { type: "SET_COFFEE_STORES"; payload: CoffeeStoreType[] };
 
 export type StoreContextType = {
   latLong: string;
-  coffeeStores: coffeeStore[];
-  setCoffeeStores: (coffeeStores: coffeeStore[]) => void;
+  coffeeStores: CoffeeStoreType[];
+  setCoffeeStores: (coffeeStores: CoffeeStoreType[]) => void;
   setLatLong: (latLong: string) => void;
 };
 
@@ -42,10 +46,10 @@ const StoreReducer = (state: StateType, action: ActionType) => {
 
   switch (type) {
     case ACTION_TYPES.SET_LAT_LONG: {
-      return { ...state, latLong: payload };
+      return { ...state, latLong: payload as string };
     }
     case ACTION_TYPES.SET_COFFEE_STORES: {
-      return { ...state, coffeeStores: payload };
+      return { ...state, coffeeStores: payload as CoffeeStoreType[] };
     }
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
@@ -56,7 +60,7 @@ type StoreProviderProps = {
   children: JSX.Element | JSX.Element[];
 };
 
-export const StoreContext = createContext<StoreContextType | null>(null);
+export const StoreContext = createContext<StoreContextType>(INITIAL_STATE);
 
 /// PROVIDER
 const StoreProvider = ({ children }: StoreProviderProps) => {
@@ -70,14 +74,14 @@ const StoreProvider = ({ children }: StoreProviderProps) => {
     dispatch({ type: "SET_LAT_LONG", payload: latLong });
   };
 
-  const setCoffeeStores = (coffeeStores: coffeeStore[]) => {
+  const setCoffeeStores = (coffeeStores: CoffeeStoreType[]) => {
     dispatch({
       type: "SET_COFFEE_STORES",
       payload: coffeeStores,
     });
   };
 
-  const value = { latLong, setLatLong, coffeeStores, setCoffeeStores } as any;
+  const value = { latLong, setLatLong, coffeeStores, setCoffeeStores };
 
   return (
     <StoreContext.Provider value={value}> {children} </StoreContext.Provider>

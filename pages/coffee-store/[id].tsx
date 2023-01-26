@@ -6,24 +6,26 @@ import cls from "classnames";
 import styles from "../../styles/coffee-store.module.css";
 import { fetchCoffeeStores } from "../../lib/coffee-stores";
 import { useState, useContext, useEffect } from "react";
-import { StoreContext } from "../../store/store-context";
+import { StoreContext, CoffeeStoreType } from "../../store/store-context";
 import { isEmpty, fetcher } from "../../utils";
 import useSWR from "swr";
+import { GetStaticProps, GetStaticPaths, GetServerSideProps } from "next";
 
-export async function getStaticProps(staticProps) {
-  const params = staticProps.params;
+export const getStaticProps: GetStaticProps = async (staticProps) => {
+  const paramsId = staticProps.params.id;
+
   const coffeeStores = await fetchCoffeeStores();
   const findCoffeeStoreById = coffeeStores.find((store) => {
-    return store.id === params.id;
+    return store.id === paramsId;
   });
   return {
     props: {
       coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
     },
   };
-}
+};
 
-export async function getStaticPaths(props) {
+export const getStaticPaths: GetStaticPaths = async (props) => {
   const coffeeStores = await fetchCoffeeStores();
   const paths = coffeeStores.map((coffeeStore) => {
     return {
@@ -37,17 +39,21 @@ export async function getStaticPaths(props) {
     paths,
     fallback: true,
   };
-}
+};
 
-const CoffeeStore = (initialProps) => {
+type InitialPropsType = {
+  coffeeStore: CoffeeStoreType;
+};
+
+const CoffeeStore = (initialProps: InitialPropsType) => {
   const router = useRouter();
   const { coffeeStores } = useContext(StoreContext);
-  const [store, setStore] = useState(initialProps.coffeeStore || {});
+  const [store, setStore] = useState(initialProps.coffeeStore);
 
   const [votingCount, setVotingCount] = useState(0);
   const id = router.query.id;
 
-  const handleCreateCoffeeStore = async (coffeeStore) => {
+  const handleCreateCoffeeStore = async (coffeeStore: CoffeeStoreType) => {
     const { id, name, address, imgUrl, neighborhood } = coffeeStore;
 
     try {
@@ -65,7 +71,7 @@ const CoffeeStore = (initialProps) => {
           neighborhood: neighborhood || "",
         }),
       });
-      const dbCoffeeStore = await response.json();
+      const dbCoffeeStore: CoffeeStoreType = await response.json();
     } catch (error) {
       console.log({ error });
     }
@@ -88,7 +94,6 @@ const CoffeeStore = (initialProps) => {
   }, [id, initialProps.coffeeStore, coffeeStores]);
 
   const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`, fetcher);
-
   useEffect(() => {
     if (data && data.length > 0) {
       setStore(data[0]);

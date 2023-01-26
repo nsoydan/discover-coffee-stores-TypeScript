@@ -6,12 +6,10 @@ const useTrackLocation = () => {
   const [isFindingLocation, setIsFindingLocation] = useState(false);
   const { setLatLong } = useContext(StoreContext);
 
-  function success(position) {
+  function success(position:GeolocationPosition) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
-
     setLatLong(`${latitude},${longitude}`);
-
     setErrorMessage("");
     setIsFindingLocation(false);
   }
@@ -33,7 +31,7 @@ const useTrackLocation = () => {
   }
 
   return {
-    //latLong,
+    
     errorMessage,
     handleTrackLocation,
     isFindingLocation,

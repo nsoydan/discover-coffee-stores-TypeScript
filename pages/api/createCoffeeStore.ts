@@ -3,10 +3,15 @@ import {
   getMinifiedRecords,
   findRecordByFilter,
 } from "../../lib/airtable";
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { CoffeeStoreType } from "../../store/store-context";
 
-const createCoffeeStore = async (req, res) => {
+
+const createCoffeeStore = async (req:NextApiRequest, res:NextApiResponse) => {
+
   if (req.method == "POST") {
-    const { id, name, address, voting, imgUrl, neighborhood } = req.body;
+
+    const { id, name, address, voting, imgUrl, neighborhood }:CoffeeStoreType = req.body;
 
     try {
       if (id) {
